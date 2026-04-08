@@ -1,114 +1,126 @@
 # Reliable Distributed Job Queue
 
-A TCP + TLS based distributed job queue system where multiple clients submit jobs and multiple workers fetch and execute them concurrently. The server manages centralized queueing, reliable assignment, result collection, timeout handling, and worker-failure re-queuing.
+A secure and fault-tolerant distributed job processing system built using Python sockets and TLS.
+Multiple clients can submit jobs concurrently, while multiple workers fetch, execute, and return results through a centralized queue managed by the server.
 
-## Key Features
+## Highlights
 
-- Multi-client and multi-worker architecture over TCP.
-- TLS-secured communication between all nodes.
-- Line-based framing protocol for stable message parsing.
-- Reliable job lifecycle: submit -> assign -> acknowledge/result.
-- Worker crash handling with automatic in-flight job re-queue.
-- Invalid job validation and clean error responses.
-- Performance evaluation under increasing concurrent load.
+- ⚡ Concurrent multi-client and multi-worker communication over TCP.
+- 🔐 TLS encryption for all client and worker connections.
+- ✅ Reliable job lifecycle management: submit, assign, execute, result delivery.
+- ♻️ In-flight job recovery with automatic re-queue on worker failure.
+- 🛡️ Input validation with clear error handling for invalid jobs.
+- 📈 Performance benchmarking under increasing load levels.
 
-## Tech Stack
+## 🏗️ System Architecture
 
-- Python 3
-- socket, ssl, threading, queue
-- cryptography (for certificate generation)
+1. Clients submit jobs to the server.
+2. Server validates and queues each job with a unique job ID.
+3. Workers pull jobs using a request model.
+4. Workers execute operations and return results.
+5. Server maps results back to waiting clients.
+6. If a worker disconnects mid-job, the server re-queues that job.
 
-## Project Structure
+## 🧩 Supported Job Format
 
-- server.py: Central coordinator, queue manager, client/worker handlers.
-- worker.py: Worker node that fetches and executes jobs.
-- client.py: Interactive client for submitting jobs.
-- protocol.py: Shared TLS context and line-based send/receive helpers.
-- generate_cert.py: Generates local self-signed TLS certificate and key.
-- perf_test.py: Load and latency benchmark script.
-- failure_test.py: Worker-failure and invalid-job scenario validation.
+- ADD x y
+- MUL x y
 
-## Setup
-
-1. Install dependency:
-
-```bash
-pip install cryptography
-```
-
-2. Generate TLS files (required before running server/clients/workers):
-
-```bash
-python generate_cert.py
-```
-
-This creates local cert.pem and key.pem files. These are intentionally ignored by git.
-
-## Run
-
-Use separate terminals.
-
-1. Start server:
-
-```bash
-python server.py
-```
-
-2. Start one or more workers:
-
-```bash
-python worker.py
-```
-
-For remote server host:
-
-```bash
-python worker.py <server-ip>
-```
-
-3. Start one or more clients:
-
-```bash
-python client.py
-```
-
-For remote server host:
-
-```bash
-python client.py <server-ip>
-```
-
-4. Submit jobs from client prompt:
+Example:
 
 ```text
 ADD 5 3
 MUL 4 6
 ```
 
-## Testing
+## 🛠️ Tech Stack
 
-Failure handling test:
+- Python 3
+- socket, ssl, threading, queue
+- cryptography (certificate generation)
+
+## 📁 Repository Layout
+
+- server.py: Central coordinator, queue manager, and connection handler.
+- worker.py: Worker node implementation for pulling and executing jobs.
+- client.py: Interactive client for submitting jobs.
+- protocol.py: Shared TLS setup and line-based messaging helpers.
+- generate_cert.py: Generates local self-signed TLS certificate and private key.
+- perf_test.py: Concurrent load testing and latency/throughput metrics.
+- failure_test.py: Failure-path validation (worker crash and invalid jobs).
+
+## 🚀 Quick Start
+
+### 1) Install dependency
+
+```bash
+pip install cryptography
+```
+
+### 2) Generate TLS certificate and key
+
+```bash
+python generate_cert.py
+```
+
+This creates cert.pem and key.pem in the project root.
+These files are intentionally ignored by Git.
+
+### 3) Start the server
+
+```bash
+python server.py
+```
+
+### 4) Start one or more workers (new terminal per worker)
+
+```bash
+python worker.py
+```
+
+For LAN/remote host:
+
+```bash
+python worker.py <server-ip>
+```
+
+### 5) Start one or more clients
+
+```bash
+python client.py
+```
+
+For LAN/remote host:
+
+```bash
+python client.py <server-ip>
+```
+
+## 🧪 Testing and Evaluation
+
+### Failure handling scenarios
 
 ```bash
 python failure_test.py
 ```
 
-Performance test (default client levels: 1, 2, 4, 8):
+### Performance and scalability benchmark
 
 ```bash
 python perf_test.py
 ```
 
-Custom load example:
+Custom load run:
 
 ```bash
 python perf_test.py --clients 2 4 8 --jobs-per-client 20
 ```
 
-## Notes
+## ⚙️ Configuration Notes
 
-- Default server port: 5000
-- Server listens on 0.0.0.0 for LAN access.
-- For best throughput testing, run multiple worker instances.
-- If certificates are missing, rerun generate_cert.py.
+- 🌐 Default port: 5000
+- 🖥️ Server bind host: 0.0.0.0
+- 🔁 Worker reconnect/backoff and timeout logic are handled in server/worker flows.
+- 🧾 If cert files are missing, run generate_cert.py again.
+
 
