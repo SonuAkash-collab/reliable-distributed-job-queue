@@ -123,4 +123,18 @@ python perf_test.py --clients 2 4 8 --jobs-per-client 20
 - 🔁 Worker reconnect/backoff and timeout logic are handled in server/worker flows.
 - 🧾 If cert files are missing, run generate_cert.py again.
 
+## 📌 Project Deliverables
+
+### Deliverable 1 
+
+- Implementation of a working server supporting multiple clients.
+- Successful demonstration of SSL implementation (or a valid alternative security mechanism).
+- Basic functional correctness of the core features.
+
+### Deliverable 2 
+
+- Performance evaluation and scalability testing.
+- Demonstration of handling failure scenarios.
+- Optimization improvements based on testing results.
+
 
